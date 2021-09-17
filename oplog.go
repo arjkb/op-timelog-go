@@ -15,11 +15,16 @@ type Oprequest struct {
 }
 
 func main() {
+	fmt.Println(makeRequest("popcorn"))
+}
+
+// make request to API and return the response
+func makeRequest(word string) string {
 	// TODO: change the way this URL is determined
 	url := "http://127.0.0.1:5000/reverse"
 
 	data, err := json.Marshal(Oprequest{
-		Word: "sandwich",
+		Word: word,
 	})
 	if err != nil {
 		log.Fatalln(err)
@@ -32,5 +37,5 @@ func main() {
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-	fmt.Printf("%s", body)
+	return string(body)
 }
