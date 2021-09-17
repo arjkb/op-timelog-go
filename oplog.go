@@ -15,6 +15,14 @@ type Oprequest struct {
 }
 
 func main() {
+
+	// TODO: read input from a file and parse it
+
+	// TODO: read config data (user key, base-url etc) from a file
+
+	// TODO: make things run in parallel using goroutines
+	// (because this is an embarassingly parallel workload)
+
 	res, statusCode := makeRequest("popcorn")
 	fmt.Println(res)
 	fmt.Println(statusCode)
