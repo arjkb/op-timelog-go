@@ -1,17 +1,31 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 )
 
+// this represents a dummy data to post
+type Oprequest struct {
+	Word string `json:"word"`
+}
+
 func main() {
 	// TODO: change the way this URL is determined
-	url := "http://127.0.0.1:5000/"
+	url := "http://127.0.0.1:5000/reverse"
 
-	resp, err := http.Get(url)
+	data, err := json.Marshal(Oprequest{
+		Word: "sandwich",
+	})
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewReader(data))
 	if err != nil {
 		log.Fatalln(err)
 	}
