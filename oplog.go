@@ -25,16 +25,18 @@ type Respp struct {
 	StatusCode int
 }
 
-func main() {
+type GoroutineResponse struct {
+	resp Respp
+	err  error
+}
 
+func main() {
 	var linecount int
+	ch := make(chan GoroutineResponse)
 
 	filename := "samplefile.txt" // TODO: read filename as a command-line arg
 
 	// TODO: read config data (user key, base-url etc) from a file
-
-	// TODO: make things run in parallel using goroutines
-	// (because this is an embarassingly parallel workload)
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -44,12 +46,20 @@ func main() {
 	input := bufio.NewScanner(file)
 	for input.Scan() {
 		linecount++
-		res, err := makeRequest(input.Text())
-		if err != nil {
+		go func(word string) {
+			var gr GoroutineResponse
+			gr.resp, gr.err = makeRequest(word)
+			ch <- gr
+		}(input.Text())
+	}
+
+	for i := 0; i < linecount; i++ {
+		gr := <-ch
+		if gr.err != nil {
 			log.Println(err)
 			continue
 		}
-		fmt.Println(res)
+		fmt.Println(gr.resp)
 	}
 }
 
