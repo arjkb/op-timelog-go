@@ -1,12 +1,5 @@
-apple
-banana
-grape
-kiwi
-lemon
-mausambi
-orange
-passion fruit
-pineapple
-potatoe
-strawberry
-watermelon
+100 1.00 Meeting with Theodore
+234 2.50 Debugging bug 200
+567 5.75 Coding & testing
+8910 2.25 Filing reports
+100 0.5 Meeting with Roosevelt
