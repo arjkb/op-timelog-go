@@ -23,9 +23,23 @@ func main() {
 	// TODO: make things run in parallel using goroutines
 	// (because this is an embarassingly parallel workload)
 
-	res, statusCode := makeRequest("popcorn")
-	fmt.Println(res)
-	fmt.Println(statusCode)
+	words := []string{
+		"apple",
+		"banana",
+		"grape",
+		"mausambi",
+		"orange",
+		"passion fruit",
+		"pineapple",
+		"potatoe",
+		"strawberry",
+		"watermelon",
+	}
+
+	for _, word := range words {
+		res, statusCode := makeRequest(word)
+		fmt.Printf("%s %d\n", res, statusCode)
+	}
 }
 
 // make request to API and return the response body and status code
