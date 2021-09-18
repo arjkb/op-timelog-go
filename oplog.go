@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 )
@@ -12,6 +11,16 @@ import (
 // this represents a dummy data to post
 type Oprequest struct {
 	Word string `json:"word"`
+}
+
+type Opresponse struct {
+	Reversed string `json:"reversed"`
+}
+
+type Respp struct {
+	Original   string
+	Answer     string
+	StatusCode int
 }
 
 func main() {
@@ -37,13 +46,19 @@ func main() {
 	}
 
 	for _, word := range words {
-		res, statusCode := makeRequest(word)
-		fmt.Printf("%s %d\n", res, statusCode)
+		res, err := makeRequest(word)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		fmt.Println(res)
 	}
 }
 
 // make request to API and return the response body and status code
-func makeRequest(word string) (string, int) {
+func makeRequest(word string) (Respp, error) {
+	var response Respp
+
 	// TODO: change the way this URL is determined
 	url := "http://127.0.0.1:5000/reverse"
 
@@ -51,18 +66,30 @@ func makeRequest(word string) (string, int) {
 		Word: word,
 	})
 	if err != nil {
-		log.Fatalln(err)
+		return response, err
 	}
 
 	resp, err := http.Post(url, "application/json", bytes.NewReader(data))
 	if err != nil {
-		log.Fatalln(err)
+		return response, err
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalln("error reading response", err)
+	if resp.StatusCode != http.StatusOK {
+		return response, fmt.Errorf("got status %d", resp.StatusCode)
 	}
-	return string(body), resp.StatusCode
+
+	var opresponse Opresponse
+	if err := json.NewDecoder(resp.Body).Decode(&opresponse); err != nil {
+		fmt.Println(err)
+		return response, err
+	}
+
+	response = Respp{
+		Original:   word,
+		Answer:     opresponse.Reversed,
+		StatusCode: resp.StatusCode,
+	}
+
+	return response, nil
 }
