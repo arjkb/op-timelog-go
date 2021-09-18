@@ -125,9 +125,9 @@ func makeRequest(word string) (Respp, error) {
 	return response, nil
 }
 
-// Parsed the input line and extracts the work-package code, duration, and
-// description
-func extractData(s string) (int, string, string) {
+// Parsed the input line and extracts the work-package code, duration,
+// description, and error if any
+func extractData(s string) (int, string, string, error) {
 	// this is a stub
-	return 1, "foo", "baz"
+	return 1, "foo", "baz", nil
 }
