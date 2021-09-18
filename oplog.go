@@ -24,6 +24,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -128,6 +129,23 @@ func makeRequest(word string) (Respp, error) {
 // Parsed the input line and extracts the work-package code, duration,
 // description, and error if any
 func extractData(s string) (int, string, string, error) {
-	// this is a stub
-	return 1, "foo", "baz", nil
+	// work-in-progress
+
+	var wp int
+	var dur string
+	var desc string
+
+	split := strings.SplitN(s, " ", 3)
+	if len(split) != 3 {
+		return wp, dur, desc, fmt.Errorf("cannot split %q into 3 parts", s)
+	}
+
+	wp, err := strconv.Atoi(split[0])
+	if err != nil {
+		return wp, dur, desc, fmt.Errorf("converting %q to int: %v", split[0], err)
+	}
+
+	dur, desc = split[1], split[2]
+
+	return wp, dur, desc, nil
 }
