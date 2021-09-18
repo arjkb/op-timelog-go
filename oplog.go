@@ -32,7 +32,7 @@ type Oprequest struct {
 }
 
 type Opresponse struct {
-	Reversed string `json:"reversed"`
+	Reversed string
 }
 
 type Respp struct {
