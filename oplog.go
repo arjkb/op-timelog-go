@@ -124,3 +124,10 @@ func makeRequest(word string) (Respp, error) {
 
 	return response, nil
 }
+
+// Parsed the input line and extracts the work-package code, duration, and
+// description
+func extractData(s string) (int, string, string) {
+	// this is a stub
+	return 1, "foo", "baz"
+}
