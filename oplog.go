@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 // this represents a dummy data to post
@@ -25,6 +27,8 @@ type Respp struct {
 
 func main() {
 
+	filename := "samplefile.txt" // TODO: read filename as a command-line arg
+
 	// TODO: read input from a file and parse it
 
 	// TODO: read config data (user key, base-url etc) from a file
@@ -43,6 +47,16 @@ func main() {
 		"potatoe",
 		"strawberry",
 		"watermelon",
+	}
+
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	input := bufio.NewScanner(file)
+	for input.Scan() {
+		fmt.Println(input.Text())
 	}
 
 	for _, word := range words {

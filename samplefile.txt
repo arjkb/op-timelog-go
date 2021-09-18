@@ -1,0 +1,12 @@
+apple
+banana
+grape
+kiwi
+lemon
+mausambi
+orange
+passion fruit
+pineapple
+potatoe
+strawberry
+watermelon
