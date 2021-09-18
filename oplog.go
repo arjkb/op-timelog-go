@@ -24,6 +24,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 // this represents a dummy data to post
@@ -62,11 +63,17 @@ func main() {
 	input := bufio.NewScanner(file)
 	for input.Scan() {
 		linecount++
+		line := input.Text()
+		s := strings.SplitN(line, " ", 3)
+
+		fmt.Println(s[0])
+		fmt.Println(s[1])
+		fmt.Println(s[2])
 		go func(word string) {
 			var gr GoroutineResponse
 			gr.resp, gr.err = makeRequest(word)
 			ch <- gr
-		}(input.Text())
+		}(line)
 	}
 
 	for i := 0; i < linecount; i++ {
