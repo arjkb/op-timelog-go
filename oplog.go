@@ -27,27 +27,14 @@ type Respp struct {
 
 func main() {
 
-	filename := "samplefile.txt" // TODO: read filename as a command-line arg
+	var linecount int
 
-	// TODO: read input from a file and parse it
+	filename := "samplefile.txt" // TODO: read filename as a command-line arg
 
 	// TODO: read config data (user key, base-url etc) from a file
 
 	// TODO: make things run in parallel using goroutines
 	// (because this is an embarassingly parallel workload)
-
-	words := []string{
-		"apple",
-		"banana",
-		"grape",
-		"mausambi",
-		"orange",
-		"passion fruit",
-		"pineapple",
-		"potatoe",
-		"strawberry",
-		"watermelon",
-	}
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -56,11 +43,8 @@ func main() {
 
 	input := bufio.NewScanner(file)
 	for input.Scan() {
-		fmt.Println(input.Text())
-	}
-
-	for _, word := range words {
-		res, err := makeRequest(word)
+		linecount++
+		res, err := makeRequest(input.Text())
 		if err != nil {
 			log.Println(err)
 			continue
