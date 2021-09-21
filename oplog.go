@@ -22,13 +22,21 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/BurntSushi/toml"
 )
+
+type Config struct {
+	Key string
+	Url string
+}
 
 // this represents a dummy data to post
 type Oprequest struct {
@@ -58,7 +66,12 @@ func main() {
 	flag.Parse()
 	fmt.Println(*filename)
 
-	// TODO: read config data (user key, base-url etc) from a file
+	// read config data (user key, base-url etc) from a file
+	key, url, err := getKeyAndUrl("config.toml.example") // this is an example config file
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(key, url)
 
 	file, err := os.Open(*filename)
 	if err != nil {
@@ -152,4 +165,26 @@ func extractData(s string) (int, string, string, error) {
 	dur, desc = split[1], split[2]
 
 	return wp, dur, desc, nil
+}
+
+// Read config filename and return the API key and url
+func getKeyAndUrl(configFileName string) (string, string, error) {
+	file, err := os.Open(configFileName)
+	if err != nil {
+		return "", "", fmt.Errorf("cannot open file: %v", err)
+	}
+
+	b, err := io.ReadAll(bufio.NewReader(file))
+	if err != nil {
+		return "", "", fmt.Errorf("cannot read file: %v", err)
+	}
+
+	var conf Config
+	if _, err := toml.Decode(string(b[:]), &conf); err != nil {
+		return "", "", fmt.Errorf("cannot decode toml: %v", err)
+	}
+
+	fmt.Println(conf)
+
+	return conf.Key, conf.Url, nil
 }
