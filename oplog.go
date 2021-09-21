@@ -76,6 +76,7 @@ func main() {
 
 	filename := *f
 	datestr := filename[7:15] // extracts date string from filenames of format "status_20210921.dailystatus"
+	// TODO: make the above line failsafe
 
 	// read config data
 	config, err := getConfig("config.toml")
