@@ -139,12 +139,12 @@ func makeRequest(word string) (Respp, error) {
 		Word: word,
 	})
 	if err != nil {
-		return response, err
+		return response, fmt.Errorf("error marshalling JSON: %v", err)
 	}
 
 	resp, err := http.Post(url, "application/json", bytes.NewReader(data))
 	if err != nil {
-		return response, err
+		return response, fmt.Errorf("error posting data: %v", err)
 	}
 	defer resp.Body.Close()
 
@@ -154,8 +154,7 @@ func makeRequest(word string) (Respp, error) {
 
 	var opresponse Opresponse
 	if err := json.NewDecoder(resp.Body).Decode(&opresponse); err != nil {
-		fmt.Println(err)
-		return response, err
+		return response, fmt.Errorf("error decoding response: %v", err)
 	}
 
 	response = Respp{
