@@ -41,17 +41,17 @@ type Config struct {
 type Request struct {
 	Links struct {
 		Activity struct {
-			Href string
-		}
-	}
+			Href string `json:"href"`
+		} `json:"activity"`
+	} `json:"_links"`
 	WorkPackage struct {
-		Href string
+		Href string `json:"href"`
 	} `json:"workPackage"`
-	Hours   string
+	Hours   string `json:"hours"`
 	Comment struct {
-		Raw string
-	}
-	SpentOn string
+		Raw string `json:"raw"`
+	} `json:"comment"`
+	SpentOn string `json:"spentOn"`
 }
 
 // this represents a dummy data to post
