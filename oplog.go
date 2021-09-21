@@ -127,8 +127,15 @@ func main() {
 
 // make request to API and return the status code
 func makeRequest(url string, key string, payload []byte) (int, error) {
-	// TODO: pass key as an HTTP Basic Auth header data
-	resp, err := http.Post(url, "application/json", bytes.NewReader(payload))
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	if err != nil {
+		return 0, fmt.Errorf("error creating new request: %v", err)
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+	req.SetBasicAuth("apikey", key)
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return 0, fmt.Errorf("error posting data: %v", err)
 	}
