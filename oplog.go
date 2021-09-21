@@ -62,9 +62,9 @@ type Request struct {
 }
 
 type GoroutineResponse struct {
-	statusCode int
+	StatusCode int
 	Payload    []byte
-	err        error
+	Err        error
 }
 
 func main() {
@@ -108,18 +108,18 @@ func main() {
 		linecount++
 		go func(url string, key string, payload []byte) {
 			var gr GoroutineResponse
-			gr.statusCode, gr.Payload, gr.err = makeRequest(url, key, payload)
+			gr.StatusCode, gr.Payload, gr.Err = makeRequest(url, key, payload)
 			ch <- gr
 		}(config.Url, config.Key, jsonMarshalled)
 	}
 
 	for i := 0; i < linecount; i++ {
 		gr := <-ch
-		if gr.err != nil {
-			log.Println(gr.err)
+		if gr.Err != nil {
+			log.Println(gr.Err)
 			continue
 		}
-		fmt.Printf("%d %s\n", gr.statusCode, gr.Payload)
+		fmt.Printf("%d %s\n", gr.StatusCode, gr.Payload)
 	}
 }
 
