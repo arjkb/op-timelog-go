@@ -63,6 +63,7 @@ type Request struct {
 
 type GoroutineResponse struct {
 	statusCode int
+	Payload    []byte
 	err        error
 }
 
@@ -107,7 +108,7 @@ func main() {
 		linecount++
 		go func(url string, key string, payload []byte) {
 			var gr GoroutineResponse
-			gr.statusCode, gr.err = makeRequest(url, key, payload)
+			gr.statusCode, gr.Payload, gr.err = makeRequest(url, key, payload)
 			ch <- gr
 		}(config.Url, config.Key, jsonMarshalled)
 	}
@@ -118,15 +119,15 @@ func main() {
 			log.Println(gr.err)
 			continue
 		}
-		fmt.Println(gr.statusCode)
+		fmt.Printf("%d %s\n", gr.statusCode, gr.Payload)
 	}
 }
 
-// make request to API and return the status code
-func makeRequest(url string, key string, payload []byte) (int, error) {
+// make request to API and return the status code and original payload
+func makeRequest(url string, key string, payload []byte) (int, []byte, error) {
 	req, err := http.NewRequest("POST", url, bytes.NewReader(payload))
 	if err != nil {
-		return 0, fmt.Errorf("error creating new request: %v", err)
+		return 0, nil, fmt.Errorf("error creating new request: %v", err)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
@@ -134,11 +135,11 @@ func makeRequest(url string, key string, payload []byte) (int, error) {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return 0, fmt.Errorf("error posting data: %v", err)
+		return 0, nil, fmt.Errorf("error posting data: %v", err)
 	}
 	defer resp.Body.Close()
 
-	return resp.StatusCode, nil
+	return resp.StatusCode, payload, nil
 }
 
 // Parsed the input line and extracts the work-package code, duration,
