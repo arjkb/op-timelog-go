@@ -26,6 +26,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // this represents a dummy data to post
@@ -51,6 +52,9 @@ type GoroutineResponse struct {
 func main() {
 	var linecount int
 	ch := make(chan GoroutineResponse)
+
+	defaultFilename := "status_" + time.Now().Format("20060102") + ".dailystatus"
+	fmt.Println(defaultFilename)
 
 	filename := "samplefile.txt" // TODO: read filename as a command-line arg
 
