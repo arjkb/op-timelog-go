@@ -85,8 +85,8 @@ func main() {
 	datestr := filename[7:15] // extracts date string from filenames of format "status_20210921.dailystatus"
 	fmt.Println(filename, datestr)
 
-	// read config data (user key, base-url etc) from a file
-	key, url, err := getKeyAndUrl("config.toml.example") // this is an example config file
+	// read config data
+	key, url, err := getKeyAndUrl("config.toml")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -116,11 +116,11 @@ func main() {
 		// incrementing linecount here (instead of at the top) to avoid
 		// counting lines for the cases where parsing it resulted in an error.
 		linecount++
-		go func(payload []byte) {
+		go func(url string, key string, payload []byte) {
 			var gr GoroutineResponse
-			gr.resp, gr.err = makeRequest(payload)
+			gr.resp, gr.err = makeRequest(url, key, payload)
 			ch <- gr
-		}(jsonMarshalled)
+		}(url, key, jsonMarshalled)
 	}
 
 	for i := 0; i < linecount; i++ {
@@ -134,11 +134,8 @@ func main() {
 }
 
 // make request to API and return the response body and status code
-func makeRequest(payload []byte) (Respp, error) {
+func makeRequest(url string, key string, payload []byte) (Respp, error) {
 	var response Respp
-
-	// TODO: change the way this URL is determined
-	url := "http://127.0.0.1:5000/reverse"
 	resp, err := http.Post(url, "application/json", bytes.NewReader(payload))
 	if err != nil {
 		return response, fmt.Errorf("error posting data: %v", err)
