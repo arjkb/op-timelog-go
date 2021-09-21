@@ -34,8 +34,15 @@ import (
 )
 
 type Config struct {
-	Key string
-	Url string
+	Key      string
+	Url      string
+	Activity ConfigActivity
+}
+
+type ConfigActivity struct {
+	Default    int
+	Meeting    int
+	MeetingWPS []int `toml:"meeting_wps"`
 }
 
 type Request struct {
@@ -71,11 +78,11 @@ func main() {
 	fmt.Println(filename, datestr)
 
 	// read config data
-	key, url, err := getKeyAndUrl("config.toml")
+	config, err := getConfig("config.toml")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(key, url)
+	fmt.Println(config)
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -105,7 +112,7 @@ func main() {
 			var gr GoroutineResponse
 			gr.statusCode, gr.err = makeRequest(url, key, payload)
 			ch <- gr
-		}(url, key, jsonMarshalled)
+		}(config.Url, config.Key, jsonMarshalled)
 	}
 
 	for i := 0; i < linecount; i++ {
@@ -171,24 +178,24 @@ func makePostDataJSON(wp int, dur string, desc string, datestr string) ([]byte, 
 	return data, nil
 }
 
-// Read config filename and return the API key and url
-func getKeyAndUrl(configFileName string) (string, string, error) {
+// Read config file and return all its contents.
+func getConfig(configFileName string) (Config, error) {
 	file, err := os.Open(configFileName)
 	if err != nil {
-		return "", "", fmt.Errorf("cannot open file: %v", err)
+		return Config{}, fmt.Errorf("cannot open file: %v", err)
 	}
 
 	b, err := io.ReadAll(bufio.NewReader(file))
 	if err != nil {
-		return "", "", fmt.Errorf("cannot read file: %v", err)
+		return Config{}, fmt.Errorf("cannot read file: %v", err)
 	}
 
 	var conf Config
 	if _, err := toml.Decode(string(b[:]), &conf); err != nil {
-		return "", "", fmt.Errorf("cannot decode toml: %v", err)
+		return Config{}, fmt.Errorf("cannot decode toml: %v", err)
 	}
 
-	fmt.Println(conf)
+	fmt.Printf("Config: %+v\n", conf)
 
-	return conf.Key, conf.Url, nil
+	return conf, nil
 }

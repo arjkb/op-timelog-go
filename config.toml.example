@@ -1,2 +1,7 @@
 key = "examplekey"
 url = "https://www.example.com"
+
+[activity]
+default = 2
+meeting = 3
+meeting_wps = [100, 200]
