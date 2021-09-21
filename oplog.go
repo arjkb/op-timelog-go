@@ -116,11 +116,11 @@ func main() {
 		// incrementing linecount here (instead of at the top) to avoid
 		// counting lines for the cases where parsing it resulted in an error.
 		linecount++
-		go func(word string) {
+		go func(payload []byte) {
 			var gr GoroutineResponse
-			gr.resp, gr.err = makeRequest(word)
+			gr.resp, gr.err = makeRequest(payload)
 			ch <- gr
-		}(line)
+		}(jsonMarshalled)
 	}
 
 	for i := 0; i < linecount; i++ {
@@ -134,20 +134,12 @@ func main() {
 }
 
 // make request to API and return the response body and status code
-func makeRequest(word string) (Respp, error) {
+func makeRequest(payload []byte) (Respp, error) {
 	var response Respp
 
 	// TODO: change the way this URL is determined
 	url := "http://127.0.0.1:5000/reverse"
-
-	data, err := json.Marshal(Oprequest{
-		Word: word,
-	})
-	if err != nil {
-		return response, fmt.Errorf("error marshalling JSON: %v", err)
-	}
-
-	resp, err := http.Post(url, "application/json", bytes.NewReader(data))
+	resp, err := http.Post(url, "application/json", bytes.NewReader(payload))
 	if err != nil {
 		return response, fmt.Errorf("error posting data: %v", err)
 	}
@@ -163,7 +155,7 @@ func makeRequest(word string) (Respp, error) {
 	}
 
 	response = Respp{
-		Original:   word,
+		// Original:   word, // we do not have a word string anymore because the param has changed
 		Answer:     opresponse.Reversed,
 		StatusCode: resp.StatusCode,
 	}
