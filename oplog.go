@@ -54,24 +54,9 @@ type Request struct {
 	SpentOn string `json:"spentOn"`
 }
 
-// this represents a dummy data to post
-type Oprequest struct {
-	Word string `json:"word"`
-}
-
-type Opresponse struct {
-	Reversed string
-}
-
-type Respp struct {
-	Original   string
-	Answer     string
-	StatusCode int
-}
-
 type GoroutineResponse struct {
-	resp Respp
-	err  error
+	statusCode int
+	err        error
 }
 
 func main() {
@@ -118,7 +103,7 @@ func main() {
 		linecount++
 		go func(url string, key string, payload []byte) {
 			var gr GoroutineResponse
-			gr.resp, gr.err = makeRequest(url, key, payload)
+			gr.statusCode, gr.err = makeRequest(url, key, payload)
 			ch <- gr
 		}(url, key, jsonMarshalled)
 	}
@@ -129,35 +114,20 @@ func main() {
 			log.Println(gr.err)
 			continue
 		}
-		fmt.Println(gr.resp)
+		fmt.Println(gr.statusCode)
 	}
 }
 
-// make request to API and return the response body and status code
-func makeRequest(url string, key string, payload []byte) (Respp, error) {
+// make request to API and return the status code
+func makeRequest(url string, key string, payload []byte) (int, error) {
 	// TODO: pass key as an HTTP Basic Auth header data
 	resp, err := http.Post(url, "application/json", bytes.NewReader(payload))
 	if err != nil {
-		return Respp{}, fmt.Errorf("error posting data: %v", err)
+		return 0, fmt.Errorf("error posting data: %v", err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return Respp{}, fmt.Errorf("got status %d", resp.StatusCode)
-	}
-
-	var opresponse Opresponse
-	if err := json.NewDecoder(resp.Body).Decode(&opresponse); err != nil {
-		return Respp{}, fmt.Errorf("error decoding response: %v", err)
-	}
-
-	response := Respp{
-		// Original:   word, // we do not have a word string anymore because the param has changed
-		Answer:     opresponse.Reversed,
-		StatusCode: resp.StatusCode,
-	}
-
-	return response, nil
+	return resp.StatusCode, nil
 }
 
 // Parsed the input line and extracts the work-package code, duration,
