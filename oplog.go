@@ -98,7 +98,7 @@ func main() {
 			continue
 		}
 
-		jsonMarshalled, err := makePostDataJSON(wp, dur, desc, datestr)
+		jsonMarshalled, err := makePostDataJSON(wp, dur, desc, datestr, config.Activity)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -162,9 +162,20 @@ func extractData(s string) (int, string, string, error) {
 }
 
 // make a request struct with appropriate params
-func makePostDataJSON(wp int, dur string, desc string, datestr string) ([]byte, error) {
+func makePostDataJSON(wp int, dur string, desc string, datestr string, configActivity ConfigActivity) ([]byte, error) {
+
+	// determine activity to be used
+	activityCode := configActivity.Default
+	for _, meetingActivity := range configActivity.MeetingWPS {
+		fmt.Println(meetingActivity)
+		if wp == meetingActivity {
+			activityCode = configActivity.Meeting
+			break
+		}
+	}
+
 	request := Request{}
-	request.Links.Activity.Href = "api/v3/time_entries/activities/3"
+	request.Links.Activity.Href = "api/v3/time_entries/activities/" + strconv.Itoa(activityCode)
 	request.WorkPackage.Href = "api/v3/work_package/" + strconv.Itoa(wp)
 	request.Hours = "PT" + dur + "H"
 	request.Comment.Raw = desc
