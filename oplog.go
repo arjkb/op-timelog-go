@@ -75,14 +75,12 @@ func main() {
 
 	filename := *f
 	datestr := filename[7:15] // extracts date string from filenames of format "status_20210921.dailystatus"
-	fmt.Println(filename, datestr)
 
 	// read config data
 	config, err := getConfig("config.toml")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(config)
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -103,7 +101,6 @@ func main() {
 			log.Println(err)
 			continue
 		}
-		fmt.Printf("%+s\n", jsonMarshalled)
 
 		// incrementing linecount here (instead of at the top) to avoid
 		// counting lines for the cases where parsing it resulted in an error.
@@ -174,7 +171,6 @@ func makePostDataJSON(wp int, dur string, desc string, datestr string, configAct
 	// determine activity to be used
 	activityCode := configActivity.Default
 	for _, meetingActivity := range configActivity.MeetingWPS {
-		fmt.Println(meetingActivity)
 		if wp == meetingActivity {
 			activityCode = configActivity.Meeting
 			break
@@ -212,8 +208,6 @@ func getConfig(configFileName string) (Config, error) {
 	if _, err := toml.Decode(string(b[:]), &conf); err != nil {
 		return Config{}, fmt.Errorf("cannot decode toml: %v", err)
 	}
-
-	fmt.Printf("Config: %+v\n", conf)
 
 	return conf, nil
 }
