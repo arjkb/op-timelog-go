@@ -99,21 +99,23 @@ func main() {
 
 	input := bufio.NewScanner(file)
 	for input.Scan() {
-		linecount++
 		line := input.Text()
 		wp, dur, desc, err := extractData(line)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			continue
 		}
-
-		fmt.Println(desc, wp, dur)
 
 		jsonMarshalled, err := makePostDataJSON(wp, dur, desc, datestr)
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			continue
 		}
 		fmt.Printf("%+s\n", jsonMarshalled)
 
+		// incrementing linecount here (instead of at the top) to avoid
+		// counting lines for the cases where parsing it resulted in an error.
+		linecount++
 		go func(word string) {
 			var gr GoroutineResponse
 			gr.resp, gr.err = makeRequest(word)
