@@ -78,7 +78,7 @@ func main() {
 	var linecount int
 	ch := make(chan GoroutineResponse)
 
-	filename := flag.String("file", "status_"+time.Now().Format("20060102")+".dailystatus", "file to read from") // "samplefile.txt" // TODO: read filename as a command-line arg
+	filename := flag.String("file", "status_"+time.Now().Format("20060102")+".dailystatus", "file to read from")
 	flag.Parse()
 	fmt.Println(*filename)
 
