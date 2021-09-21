@@ -135,23 +135,23 @@ func main() {
 
 // make request to API and return the response body and status code
 func makeRequest(url string, key string, payload []byte) (Respp, error) {
-	var response Respp
+	// TODO: pass key as an HTTP Basic Auth header data
 	resp, err := http.Post(url, "application/json", bytes.NewReader(payload))
 	if err != nil {
-		return response, fmt.Errorf("error posting data: %v", err)
+		return Respp{}, fmt.Errorf("error posting data: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return response, fmt.Errorf("got status %d", resp.StatusCode)
+		return Respp{}, fmt.Errorf("got status %d", resp.StatusCode)
 	}
 
 	var opresponse Opresponse
 	if err := json.NewDecoder(resp.Body).Decode(&opresponse); err != nil {
-		return response, fmt.Errorf("error decoding response: %v", err)
+		return Respp{}, fmt.Errorf("error decoding response: %v", err)
 	}
 
-	response = Respp{
+	response := Respp{
 		// Original:   word, // we do not have a word string anymore because the param has changed
 		Answer:     opresponse.Reversed,
 		StatusCode: resp.StatusCode,
