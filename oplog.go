@@ -82,11 +82,12 @@ func main() {
 	for input.Scan() {
 		linecount++
 		line := input.Text()
-		s := strings.SplitN(line, " ", 3)
+		wp, dur, desc, err := extractData(line)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-		fmt.Println(s[0])
-		fmt.Println(s[1])
-		fmt.Println(s[2])
+		fmt.Println(desc, wp, dur)
 		go func(word string) {
 			var gr GoroutineResponse
 			gr.resp, gr.err = makeRequest(word)
