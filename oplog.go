@@ -78,9 +78,12 @@ func main() {
 	var linecount int
 	ch := make(chan GoroutineResponse)
 
-	filename := flag.String("file", "status_"+time.Now().Format("20060102")+".dailystatus", "file to read from")
+	f := flag.String("file", "status_"+time.Now().Format("20060102")+".dailystatus", "file to read from")
 	flag.Parse()
-	fmt.Println(*filename)
+
+	filename := *f
+	datestr := filename[7:15] // extracts date string from filenames of format "status_20210921.dailystatus"
+	fmt.Println(filename, datestr)
 
 	// read config data (user key, base-url etc) from a file
 	key, url, err := getKeyAndUrl("config.toml.example") // this is an example config file
@@ -89,7 +92,7 @@ func main() {
 	}
 	fmt.Println(key, url)
 
-	file, err := os.Open(*filename)
+	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatalln(err)
 	}
