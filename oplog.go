@@ -181,7 +181,7 @@ func makePostDataJSON(wp int, dur string, desc string, datestr string, configAct
 
 	request := Request{}
 	request.Links.Activity.Href = "/api/v3/time_entries/activities/" + strconv.Itoa(activityCode)
-	request.Links.WorkPackage.Href = "/api/v3/work_package/" + strconv.Itoa(wp)
+	request.Links.WorkPackage.Href = "/api/v3/work_packages/" + strconv.Itoa(wp)
 	request.Hours = "PT" + dur + "H"
 	request.Comment.Raw = desc
 	request.SpentOn = datestr
