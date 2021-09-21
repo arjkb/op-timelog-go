@@ -126,7 +126,7 @@ func main() {
 	for i := 0; i < linecount; i++ {
 		gr := <-ch
 		if gr.err != nil {
-			log.Println(err)
+			log.Println(gr.err)
 			continue
 		}
 		fmt.Println(gr.resp)
