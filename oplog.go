@@ -124,7 +124,7 @@ func main() {
 
 // make request to API and return the status code
 func makeRequest(url string, key string, payload []byte) (int, error) {
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+	req, err := http.NewRequest("POST", url, bytes.NewReader(payload))
 	if err != nil {
 		return 0, fmt.Errorf("error creating new request: %v", err)
 	}
