@@ -38,6 +38,22 @@ type Config struct {
 	Url string
 }
 
+type Request struct {
+	Links struct {
+		Activity struct {
+			Href string
+		}
+	}
+	WorkPackage struct {
+		Href string
+	} `json:"workPackage"`
+	Hours   string
+	Comment struct {
+		Raw string
+	}
+	SpentOn string
+}
+
 // this represents a dummy data to post
 type Oprequest struct {
 	Word string `json:"word"`
@@ -88,6 +104,10 @@ func main() {
 		}
 
 		fmt.Println(desc, wp, dur)
+
+		request := makeRequestStruct(wp, dur, desc)
+		fmt.Printf("%+v\n", request)
+
 		go func(word string) {
 			var gr GoroutineResponse
 			gr.resp, gr.err = makeRequest(word)
@@ -166,6 +186,18 @@ func extractData(s string) (int, string, string, error) {
 	dur, desc = split[1], split[2]
 
 	return wp, dur, desc, nil
+}
+
+// make a request struct with appropriate params
+func makeRequestStruct(wp int, dur string, desc string) Request {
+	request := Request{}
+	request.Links.Activity.Href = "url/to/href"
+	request.WorkPackage.Href = "url/to/workpackage"
+	request.Hours = "PT6.5H"
+	request.Comment.Raw = "example comment"
+	request.SpentOn = "20210905"
+
+	return request
 }
 
 // Read config filename and return the API key and url
