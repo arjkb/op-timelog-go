@@ -20,6 +20,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -53,14 +54,13 @@ func main() {
 	var linecount int
 	ch := make(chan GoroutineResponse)
 
-	defaultFilename := "status_" + time.Now().Format("20060102") + ".dailystatus"
-	fmt.Println(defaultFilename)
-
-	filename := "samplefile.txt" // TODO: read filename as a command-line arg
+	filename := flag.String("file", "status_"+time.Now().Format("20060102")+".dailystatus", "file to read from") // "samplefile.txt" // TODO: read filename as a command-line arg
+	flag.Parse()
+	fmt.Println(*filename)
 
 	// TODO: read config data (user key, base-url etc) from a file
 
-	file, err := os.Open(filename)
+	file, err := os.Open(*filename)
 	if err != nil {
 		log.Fatalln(err)
 	}
