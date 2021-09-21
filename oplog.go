@@ -108,8 +108,11 @@ func main() {
 
 		fmt.Println(desc, wp, dur)
 
-		request := makeRequestStruct(wp, dur, desc)
-		fmt.Printf("%+v\n", request)
+		jsonMarshalled, err := makePostDataJSON(wp, dur, desc, datestr)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%+s\n", jsonMarshalled)
 
 		go func(word string) {
 			var gr GoroutineResponse
@@ -191,15 +194,20 @@ func extractData(s string) (int, string, string, error) {
 }
 
 // make a request struct with appropriate params
-func makeRequestStruct(wp int, dur string, desc string) Request {
+func makePostDataJSON(wp int, dur string, desc string, datestr string) ([]byte, error) {
 	request := Request{}
-	request.Links.Activity.Href = "url/to/href"
-	request.WorkPackage.Href = "url/to/workpackage"
-	request.Hours = "PT6.5H"
-	request.Comment.Raw = "example comment"
-	request.SpentOn = "20210905"
+	request.Links.Activity.Href = "api/v3/time_entries/activities/3"
+	request.WorkPackage.Href = "api/v3/work_package/" + strconv.Itoa(wp)
+	request.Hours = "PT" + dur + "H"
+	request.Comment.Raw = desc
+	request.SpentOn = datestr
 
-	return request
+	data, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal JSON: %v", err)
+	}
+
+	return data, nil
 }
 
 // Read config filename and return the API key and url
